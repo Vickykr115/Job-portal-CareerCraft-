@@ -1,78 +1,91 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import "./login.css"; // Import the CSS file for styling
 
 const Login = () => {
+    const [message, setMessage] = useState("");
+    const [userinfo, setInfo] = useState({});
 
-    let [message, setMessage] = useState("");
-    let [userinfo, setInfo] = useState( {} );
-   
     const pickValue = (obj) => {
-        userinfo[obj.target.name] = obj.target.value;
-        setInfo(userinfo);
-    }
+        setInfo({ ...userinfo, [obj.target.name]: obj.target.value });
+    };
 
-    const loginCheck = (frmobj) =>{
+    const loginCheck = (frmobj) => {
         frmobj.preventDefault();
         setMessage("Please Wait Validating....");
 
         let url = "http://localhost:1234/userapi";
         fetch(url)
-        .then(response=>response.json())
-        .then(info=>{
-            let userfound = false;
-            info.map((user, index) => {
-                if(user.email == userinfo.email && user.password == userinfo.password){
-                    userfound = true;
-                    setMessage("Login Success : Redirecting");
-                    localStorage.setItem("userid", user.id);
-                    localStorage.setItem("fullname", user.fname);
-                    localStorage.setItem("usertype", user.type);
-                    window.location.href="#/profile";
-                    window.location.reload();
+            .then((response) => response.json())
+            .then((info) => {
+                let userfound = false;
+                info.forEach((user) => {
+                    if (user.email === userinfo.email && user.password === userinfo.password) {
+                        userfound = true;
+                        setMessage("Login Success: Redirecting...");
+                        localStorage.setItem("userid", user.id);
+                        localStorage.setItem("fullname", user.fname);
+                        localStorage.setItem("usertype", user.type);
+                        window.location.href = "#/profile";
+                        window.location.reload();
+                    }
+                });
+
+                if (!userfound) {
+                    setMessage("Login Failed: Invalid Credentials or User Does Not Exist");
                 }
-            }) // Map End
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+                setMessage("An error occurred. Please try again later.");
+            });
+    };
 
-            if(userfound==false){
-                setMessage("Login Failed : Invalid or Not Exist");
-            }
-        })
-    }
     return (
-        <div className="container mt-4">
-            <div className="row">
-                <div className="col-xl-4"></div>
-                <div className="col-xl-4">
-                    <p className="text-center text-danger mb-4"> {message} </p>
-                    <form onSubmit={loginCheck}>
-                        <div className="card">
-                            <div className="card-header"> 
-                               <i className="fa fa-lock"></i>  Login <Link to="/signup" className="float-end"> New User ? </Link>
+        <div className="login-container">
+            <div className="login-background"></div>
+            <div className="login-box">
+                <p className="login-message">{message}</p>
+                <form onSubmit={loginCheck}>
+                    <div className="login-card">
+                        <div className="login-header">
+                            <i className="fa fa-lock"></i> Login{" "}
+                            <Link to="/signup" className="float-end">
+                                New User?
+                            </Link>
+                        </div>
+                        <div className="login-body">
+                            <div className="form-group">
+                                <label>Email</label>
+                                <input
+                                    type="email"
+                                    className="form-control"
+                                    name="email"
+                                    onChange={pickValue}
+                                    required
+                                />
                             </div>
-                            <div className="card-body">
-
-                                <div className="row mb-3">
-                                    <div className="col-xl-12">
-                                        <label>Email-Id </label>
-                                        <input type="email" className="form-control" name="email" onChange={pickValue} />
-                                    </div>
-
-                                    <div className="col-xl-12">
-                                        <label>Password</label>
-                                        <input type="password" className="form-control" name="password" onChange={pickValue} />
-                                    </div>
-                                </div>
-
-                            </div>
-                            <div className="card-footer text-center">
-                                <button className="btn btn-primary"> Login </button>
+                            <div className="form-group">
+                                <label>Password</label>
+                                <input
+                                    type="password"
+                                    className="form-control"
+                                    name="password"
+                                    onChange={pickValue}
+                                    required
+                                />
                             </div>
                         </div>
-                    </form>
-                </div>
-                <div className="col-xl-4"></div>
+                        <div className="login-footer">
+                            <button type="submit" className="login-button">
+                                Login
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
-    )
-}
+    );
+};
 
 export default Login;

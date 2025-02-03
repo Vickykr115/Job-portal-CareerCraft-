@@ -51,6 +51,19 @@
       "city": "Bangalore",
       "address": "Marathalli ",
       "type": "COMPANY"
+    },
+    {
+      "id": "bc2b",
+      "type": "USER",
+      "fname": "vicky kumar",
+      "mobile": "09065566629",
+      "email": "vicky123@gmail.com",
+      "state": "Bihar",
+      "city": "Vaishali",
+      "address": "saas",
+      "password": "1234",
+      "dob": "2025-02-03",
+      "education": "Mca"
     }
   ],
   "contactapi": [],
